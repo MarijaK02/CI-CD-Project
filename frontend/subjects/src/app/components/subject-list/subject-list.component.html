@@ -1,0 +1,16 @@
+<h2>Subjects</h2>
+<ul>
+  <li *ngFor="let subject of subjects">
+    <input [(ngModel)]="subject.name" placeholder="Name">
+    <input [(ngModel)]="subject.description" placeholder="Description">
+    <input type="number" [(ngModel)]="subject.credits" placeholder="Credits">
+    <button (click)="update(subject)">Update</button>
+    <button (click)="delete(subject)">Delete</button>
+  </li>
+</ul>
+
+<h3>Add Subject</h3>
+<input [(ngModel)]="newSubject.name" placeholder="Name">
+<input [(ngModel)]="newSubject.description" placeholder="Description">
+<input type="number" [(ngModel)]="newSubject.credits" placeholder="Credits">
+<button (click)="add()">Add</button>

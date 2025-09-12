@@ -26,6 +26,15 @@ public class SubjectController {
         }
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<SubjectDto> get(@PathVariable String id) {
+        try{
+            return ResponseEntity.ok(subjectService.get(id));
+        }catch (Exception e){
+            return ResponseEntity.status(500).build();
+        }
+    }
+
     @PostMapping
     public ResponseEntity<SubjectDto> create(@RequestBody SubjectDto subject) {
         try{
