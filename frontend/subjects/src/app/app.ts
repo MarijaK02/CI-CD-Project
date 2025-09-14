@@ -3,6 +3,7 @@ import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { SubjectListComponent } from './components/subject-list/subject-list.component';
+import { HomeComponent } from './components/home/home.component';
 
 @Component({
   selector: 'app-root',
@@ -10,7 +11,8 @@ import { SubjectListComponent } from './components/subject-list/subject-list.com
   imports: [
     RouterOutlet,
     SubjectListComponent,
-    HttpClientModule
+    HttpClientModule,
+    HomeComponent
   ],
   templateUrl: './app.html',
   styleUrls: ['./app.scss']

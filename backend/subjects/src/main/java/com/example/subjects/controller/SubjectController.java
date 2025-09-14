@@ -8,7 +8,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/subjects")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = {"http://localhost:4200", "http://localhost:4201"})
 public class SubjectController {
 
     private final SubjectService subjectService;
@@ -18,11 +18,11 @@ public class SubjectController {
     }
 
     @GetMapping
-    public ResponseEntity<List<SubjectDto>> getAll() {
+    public ResponseEntity<?> getAll() {
         try{
             return ResponseEntity.ok(subjectService.getAll());
         }catch (Exception e){
-            return ResponseEntity.status(500).build();
+            return ResponseEntity.status(500).body(e.getMessage());
         }
     }
 
