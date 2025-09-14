@@ -1,0 +1,46 @@
+version: '1'
+
+services:
+  mongo:
+    image: mongo:8.0
+    container_name: mongo
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_DATABASE: ${MONGO_DATABASE}
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  backend:
+    build:
+      context: ./backend/subjects
+      dockerfile: Dockerfile
+    container_name: subjects-backend
+    restart: unless-stopped
+    environment:
+      SPRING_DATA_MONGODB_HOST: ${MONGO_HOST}
+      SPRING_DATA_MONGODB_PORT: ${MONGO_PORT}
+      SPRING_DATA_MONGODB_DATABASE: ${MONGO_DATABASE}
+      SPRING_DATA_MONGODB_USERNAME: ${MONGO_USER}
+      SPRING_DATA_MONGODB_PASSWORD: ${MONGO_PASSWORD}
+    depends_on:
+      - mongo
+    ports:
+      - "9090:9090"
+
+  frontend:
+    build:
+      context: ./frontend/subjects
+      dockerfile: Dockerfile
+    container_name: subjects-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "4200:4200"
+
+volumes:
+  mongo_data:
