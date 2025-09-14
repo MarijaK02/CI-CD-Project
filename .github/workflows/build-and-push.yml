@@ -10,6 +10,7 @@ on:
 
 jobs:
   backend:
+    if: contains(github.event.paths, 'backend/subjects/')
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -32,6 +33,7 @@ jobs:
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/subjects-backend:latest
 
   frontend:
+    if: contains(github.event.paths, 'frontend/subjects/')
     runs-on: ubuntu-latest
     defaults:
       run:
