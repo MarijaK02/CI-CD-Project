@@ -4,7 +4,6 @@ COPY package.json package-lock.json ./
 RUN npm ci
 COPY . .
 RUN npm run build --configuration=production
-RUN echo "Contents of /app/dist/subjects/browser:" && ls -R /app/dist/subjects/browser
 
 FROM nginx:latest
 RUN rm -rf /usr/share/nginx/html/*
