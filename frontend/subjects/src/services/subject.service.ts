@@ -5,7 +5,7 @@ import { Subject } from '../app/model/subjects';
 
 @Injectable({ providedIn: 'root' })
 export class SubjectService {
-  private baseUrl = 'http://localhost:9090/api/subjects';
+  private baseUrl = '/api/subjects';
   constructor(private http: HttpClient) {}
 
   getAll(): Observable<Subject[]> {
