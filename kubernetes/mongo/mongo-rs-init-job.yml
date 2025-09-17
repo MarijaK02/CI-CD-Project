@@ -1,0 +1,42 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mongo-rs-init
+  namespace: subjects-app-namespace
+spec:
+  backoffLimit: 6
+  template:
+    spec:
+      restartPolicy: OnFailure
+      volumes:
+        - name: mongo-keyfile
+          secret:
+            secretName: mongo-keyfile
+      containers:
+        - name: rs-init
+          image: mongo:6
+          volumeMounts:
+            - name: mongo-keyfile
+              mountPath: /etc/secrets
+              subPath: mongo-keyfile
+              readOnly: true
+          command: ["bash", "-c"]
+          args:
+            - |
+              set -euo pipefail
+
+              PRIMARY_HOST="mongo-0.mongo.subjects-app-namespace.svc.cluster.local:27017"
+              MEMBER1="mongo-1.mongo.subjects-app-namespace.svc.cluster.local:27017"
+
+              echo "Waiting for mongo-0 to be ready..."
+              until mongosh --host "$PRIMARY_HOST" --keyFile /etc/secrets/mongo-keyfile "db.adminCommand('ping')" >/dev/null 2>&1; do
+                sleep 2
+              done
+              echo "mongo-0 is ready"
+
+              echo "Initiating replica set..."
+              cfg='{ _id: "rs0", members: [ { _id: 0, host: "'"$PRIMARY_HOST"'" }, { _id: 1, host: "'"$MEMBER1"'" } ] }'
+              mongosh --host "$PRIMARY_HOST" --keyFile /etc/secrets/mongo-keyfile --eval "rs.initiate($cfg)"
+
+              echo "Replica set initiated successfully"
+              exit 0

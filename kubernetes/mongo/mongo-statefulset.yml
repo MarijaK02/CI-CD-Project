@@ -14,14 +14,34 @@ spec:
       labels:
         app: mongo
     spec:
+      initContainers:
+        - name: fix-permissions
+          image: busybox
+          command:
+            - sh
+            - -c
+            - |
+              cp /secret/mongo-keyfile /keyfile/mongo-keyfile && \
+              chmod 400 /keyfile/mongo-keyfile && \
+              chown 999:999 /keyfile/mongo-keyfile
+          volumeMounts:
+            - name: mongo-keyfile-secret
+              mountPath: /secret
+            - name: mongo-keyfile
+              mountPath: /keyfile
+
       containers:
         - name: mongo
           image: mongo:6
+          command:
+            - mongod
+            - --replSet
+            - rs0
+            - --bind_ip_all
+            - --keyFile
+            - /etc/secrets/mongo-keyfile
           ports:
             - containerPort: 27017
-          volumeMounts:
-            - name: mongo-persistent-storage
-              mountPath: /data/db
           env:
             - name: MONGO_INITDB_DATABASE
               valueFrom:
@@ -38,11 +58,24 @@ spec:
                 secretKeyRef:
                   name: mongo-secret
                   key: password
+          volumeMounts:
+            - name: mongo-persistent-storage
+              mountPath: /data/db
+            - name: mongo-keyfile
+              mountPath: /etc/secrets
+
+      volumes:
+        - name: mongo-keyfile
+          emptyDir: {}
+        - name: mongo-keyfile-secret
+          secret:
+            secretName: mongo-keyfile
+
   volumeClaimTemplates:
     - metadata:
         name: mongo-persistent-storage
       spec:
-        accessModes: [ "ReadWriteOnce" ]
+        accessModes: ["ReadWriteOnce"]
         resources:
           requests:
             storage: 1Gi
