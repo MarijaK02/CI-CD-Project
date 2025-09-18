@@ -29,10 +29,9 @@ spec:
               mountPath: /secret
             - name: mongo-keyfile
               mountPath: /keyfile
-
       containers:
         - name: mongo
-          image: mongo:6
+          image: mongo:6.0
           command:
             - mongod
             - --replSet
@@ -48,16 +47,6 @@ spec:
                 configMapKeyRef:
                   name: mongo-config-map
                   key: db
-            - name: MONGO_INITDB_ROOT_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: mongo-secret
-                  key: username
-            - name: MONGO_INITDB_ROOT_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: mongo-secret
-                  key: password
           volumeMounts:
             - name: mongo-persistent-storage
               mountPath: /data/db
